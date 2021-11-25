@@ -1,0 +1,77 @@
+﻿@model MovieDB.Models.MovieDetail
+
+@{
+    ViewData["Title"] = "Details";
+    List<String> ActorList = (List<String>)ViewBag.ActorList;
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>MovieDetail</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReleaseYear)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReleaseYear)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.OnLanguage)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.OnLanguage)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Grade)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Grade)
+
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Genre)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Genre)
+        </dd>
+
+        @if(ActorList != null) {
+            <dt class="col-sm-2">
+                Skådespelare
+            </dt>
+        }
+        <dd class="col-sm-10">
+            @{  int stop = 0;
+                if(ActorList != null) {
+                    stop = ActorList.Count;
+                }
+              }
+
+            @{for (int i = 0; i < stop; i++)
+                {
+
+                    if (i == ActorList.Count - 1)
+                    {
+                        @(ActorList[i]);
+                    }
+                    else
+                    {
+                        @(ActorList[i] + ", ");
+                    }
+                }
+            }
+        </dd>
+    </dl>
+</div>
+<div>
+    @Html.ActionLink("Redigera", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    <a asp-action="Index">Tillbaka till listan</a>
+</div>
