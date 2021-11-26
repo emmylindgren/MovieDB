@@ -63,7 +63,6 @@ namespace MovieDB.Controllers
 
             ViewBag.LanguageSelection = languages;
             ViewBag.GenreSelection = genres;
-            //Denna gör jag inget med just nu 
             ViewBag.ActorSelection = actors;
 
             return View();
@@ -118,6 +117,33 @@ namespace MovieDB.Controllers
             }
             
             ViewBag.error = error;
+
+            return View(md);
+        }
+
+        public IActionResult Edit(int id)
+        {
+            MovieMethods mm = new MovieMethods();
+            string error = "";
+
+            MovieDetail md = new MovieDetail();
+
+            md = mm.GetOneMovie(id, out error);
+
+
+            LanguageMethods lm = new LanguageMethods();
+            GenreMethods gm = new GenreMethods();
+            ActorMethods am = new ActorMethods();
+
+            List<SelectListItem> languages = lm.GetAllLanguages(out error);
+            List<SelectListItem> genres = gm.GetAllGenres(out error);
+            List<SelectListItem> actors = am.GetActorandID(out error);
+
+            ViewBag.LanguageSelection = languages;
+            ViewBag.GenreSelection = genres;
+
+            ViewBag.ActorSelection = actors;
+
 
             return View(md);
         }

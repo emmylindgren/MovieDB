@@ -1,0 +1,77 @@
+﻿@model MovieDB.Models.MovieDetail
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+
+@{
+    IEnumerable<SelectListItem> LanguageSelection = (IEnumerable<SelectListItem>)ViewBag.LanguageSelection;
+    IEnumerable<SelectListItem> GenreSelection = (IEnumerable<SelectListItem>)ViewBag.GenreSelection;
+    IEnumerable<SelectListItem> ActorSelection = (IEnumerable<SelectListItem>)ViewBag.ActorSelection;
+
+}
+
+<h1>Edit</h1>
+
+<h4>MovieDetail</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReleaseYear" class="control-label"></label>
+                <input asp-for="ReleaseYear" class="form-control" />
+                <span asp-validation-for="ReleaseYear" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="OnLanguage" class="control-label"></label>
+                <br />
+                @foreach (SelectListItem item in LanguageSelection)
+                {
+                    <input asp-for="OnLanguage" type="radio" value="@item.Value"> @item.Text<br />
+                }
+                <span asp-validation-for="OnLanguage" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Grade" class="control-label"></label>
+                @Html.DropDownListFor(m => m.Grade, Enumerable.Range(1, 5).Select(i => new SelectListItem { Text = i.ToString(), Value = i.ToString() }))
+                <span asp-validation-for="Grade" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Genre" class="control-label"></label>
+                <br />
+                @foreach (SelectListItem item in GenreSelection)
+                {
+                    <input asp-for="Genre" type="radio" value="@item.Value"> @item.Text<br />
+                }
+                <span asp-validation-for="Genre" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Actors" class="control-label"></label>
+                @Html.ListBoxFor(m => m.Actors, ActorSelection, "Välj skådespelare")
+                <span asp-validation-for="Actors" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- asp-action = "Details" asp-route-id=idet på nåt vis här nere vid asp-action för att komma tillbaka på knappen-->
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
