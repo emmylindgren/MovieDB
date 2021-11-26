@@ -37,6 +37,7 @@ namespace MovieDB.Models
         [Display(Name = "Genre")]
         public String Genre { get; set; }
 
+        [Display(Name = "Skådespelare")]
         public List<String> Actors { get; set; }
 
     }

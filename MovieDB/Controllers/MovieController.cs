@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using MovieDB.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Http;
 
 namespace MovieDB.Controllers
 {
@@ -121,6 +123,7 @@ namespace MovieDB.Controllers
             return View(md);
         }
 
+        [HttpGet]
         public IActionResult Edit(int id)
         {
             MovieMethods mm = new MovieMethods();
@@ -130,22 +133,35 @@ namespace MovieDB.Controllers
 
             md = mm.GetOneMovie(id, out error);
 
-
             LanguageMethods lm = new LanguageMethods();
             GenreMethods gm = new GenreMethods();
             ActorMethods am = new ActorMethods();
 
             List<SelectListItem> languages = lm.GetAllLanguages(out error);
             List<SelectListItem> genres = gm.GetAllGenres(out error);
-            List<SelectListItem> actors = am.GetActorandID(out error);
+            List<SelectListItem> actors = am.GetActorandIDSelected(out error, md.Id);
 
             ViewBag.LanguageSelection = languages;
             ViewBag.GenreSelection = genres;
-
             ViewBag.ActorSelection = actors;
-
-
             return View(md);
+        }
+
+        [HttpPost]
+        public IActionResult Edit([FromForm] MovieDetail md)
+        {
+            MovieMethods mm = new MovieMethods();
+            int i = 0;
+            string error = "";
+
+           // md.Id = id;
+
+            i = mm.UpdateMovie(md, out error);
+            ViewBag.error = error;
+            ViewBag.antal = i;
+
+            return RedirectToAction("Edit",md.Id);
+
         }
     }
 }

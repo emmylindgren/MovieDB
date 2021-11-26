@@ -67,6 +67,66 @@ namespace MovieDB.Models
             }
 
         }
+        
+        public int UpdateMovie(MovieDetail md, out string errormsg)
+        {
+            //Create SqlConnection object
+            SqlConnection dbConnection = new SqlConnection();
+
+            //Connection towards SQL Server
+            dbConnection.ConnectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=Movies;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+
+            //Sqlstring and updating the movie on the db
+            String sqlstring = "UPDATE Tbl_Movie SET Mo_Title = @title," +
+                " Mo_ReleaseYear = @releaseYear, Mo_OnLanguage = @onLanguage,Mo_Grade = @grade, " +
+                "Mo_Genre = @genre " +
+                "WHERE Mo_Id = @id";
+            SqlCommand dbCommand = new SqlCommand(sqlstring, dbConnection);
+
+            dbCommand.Parameters.Add("title", SqlDbType.NVarChar, 50).Value = md.Title;
+            dbCommand.Parameters.Add("releaseYear", SqlDbType.Int).Value = md.ReleaseYear;
+            dbCommand.Parameters.Add("onLanguage", SqlDbType.Int).Value = Convert.ToInt32(md.OnLanguage);
+            dbCommand.Parameters.Add("grade", SqlDbType.Int).Value = md.Grade;
+            dbCommand.Parameters.Add("genre", SqlDbType.Int).Value = Convert.ToInt32(md.Genre);
+            dbCommand.Parameters.Add("id", SqlDbType.Int).Value = md.Id;
+
+            List<String> actors = md.Actors;
+
+
+            try
+            {
+                dbConnection.Open();
+                int i = 0;
+                //Updating the movie in the db. Returns integer representing how many rows has been 
+                //updated in the db. If 1, success in adding one movie to the db. 
+                i = dbCommand.ExecuteNonQuery();
+                if (i == 1)
+                {
+                    errormsg = "";
+
+                }
+                else
+                {
+                    errormsg = "The Movie was not updated in the database";
+                }
+                return (i);
+            }
+            catch (Exception e)
+            {
+                errormsg = e.Message;
+                return 0;
+            }
+            finally
+            {
+                dbConnection.Close();
+                if (actors != null)
+                {
+                    int movie_id = getMovieID(md.Title, out errormsg);
+                    addMovieConnections(movie_id, actors, out errormsg);
+                }
+            }
+
+        }
 
         public int getMovieID(String movieTitle, out string errormsg)
         {

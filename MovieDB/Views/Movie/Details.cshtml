@@ -1,14 +1,12 @@
 ﻿@model MovieDB.Models.MovieDetail
 
 @{
-    ViewData["Title"] = "Details";
     List<String> ActorList = (List<String>)ViewBag.ActorList;
 }
 
-<h1>Details</h1>
+<h1>Filmdetaljer</h1>
 
 <div>
-    <h4>MovieDetail</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
@@ -72,6 +70,6 @@
     </dl>
 </div>
 <div>
-    @Html.ActionLink("Redigera", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    @Html.ActionLink("Redigera", "Edit", new {id = Model.Id}) |
     <a asp-action="Index">Tillbaka till listan</a>
 </div>

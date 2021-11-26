@@ -73,6 +73,93 @@ namespace MovieDB.Models
 
         }
 
+        public List<SelectListItem> GetActorandIDSelected(out string errormsg, int id)
+        {
+
+            SqlConnection dbConnection = new SqlConnection();
+
+            dbConnection.ConnectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=Movies;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+
+            String sqlstring = "SELECT Ac_FirstName, Ac_LastName, Ac_Id FROM Tbl_Actor";
+            SqlCommand dbCommand = new SqlCommand(sqlstring, dbConnection);
+
+            //Create adapter 
+            SqlDataAdapter actorAdapter = new SqlDataAdapter(dbCommand);
+            DataSet actorDS = new DataSet();
+
+            List<String> SelectedActors = GetActorsCorrespondingTo(id,out errormsg);
+            List<SelectListItem> ActorList = new List<SelectListItem>();
+
+            try
+            {
+                dbConnection.Open();
+
+                actorAdapter.Fill(actorDS, "Actor");
+
+                int count = 0;
+                int i = 0;
+
+                count = actorDS.Tables["Actor"].Rows.Count;
+
+                if (count > 0)
+                {
+                    while (i < count)
+                    {
+                        String name = actorDS.Tables["Actor"].Rows[i]["Ac_FirstName"].ToString() + " " + actorDS.Tables["Actor"].Rows[i]["Ac_LastName"].ToString();
+                        if(SelectedActors != null)
+                        {
+                            if (SelectedActors.Contains(name))
+                            {
+                                ActorList.Add(new SelectListItem
+                                {
+                                    Text = actorDS.Tables["Actor"].Rows[i]["Ac_FirstName"].ToString() + " " + actorDS.Tables["Actor"].Rows[i]["Ac_LastName"].ToString(),
+                                    Value = actorDS.Tables["Actor"].Rows[i]["Ac_Id"].ToString(),
+                                    Selected = true
+                                });
+                            }
+                            else
+                            {
+                                ActorList.Add(new SelectListItem
+                                {
+                                    Text = actorDS.Tables["Actor"].Rows[i]["Ac_FirstName"].ToString() + " " + actorDS.Tables["Actor"].Rows[i]["Ac_LastName"].ToString(),
+                                    Value = actorDS.Tables["Actor"].Rows[i]["Ac_Id"].ToString()
+                                });
+
+                            }
+                        }
+                        else
+                        {
+                            ActorList.Add(new SelectListItem
+                            {
+                                Text = actorDS.Tables["Actor"].Rows[i]["Ac_FirstName"].ToString() + " " + actorDS.Tables["Actor"].Rows[i]["Ac_LastName"].ToString(),
+                                Value = actorDS.Tables["Actor"].Rows[i]["Ac_Id"].ToString()
+                            });
+                        }
+                        
+                        //Read the data from the dataset.
+                        i++;
+                    }
+                    errormsg = "";
+                    return ActorList;
+                }
+                else
+                {
+                    errormsg = "No actors was fetched";
+                    return (null);
+                }
+            }
+            catch (Exception e)
+            {
+                errormsg = e.Message;
+                return (null);
+            }
+            finally
+            {
+                dbConnection.Close();
+            }
+
+        }
+
         public List<String> GetActorsCorrespondingTo(int movie_id, out string errormsg)
         {
 
