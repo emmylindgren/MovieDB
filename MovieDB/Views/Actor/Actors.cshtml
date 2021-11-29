@@ -1,0 +1,50 @@
+﻿@model IEnumerable<MovieDB.Models.ActorDetail>
+
+@{
+    ViewData["Title"] = "Actors";
+}
+
+<h1>Dina skådespelare</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BirthYear)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BirthYear)
+            </td>
+            <td>
+                @Html.ActionLink("Mer information", "ActorDetails", new {actorId= item.Id }) |
+                @Html.ActionLink("Ta bort", "DeleteActor", new { actorId = item.Id })
+            </td>
+        </tr>
+        }
+
+
+    </tbody>
+
+</table>
+<p>
+    <a asp-action="AddActor">Lägg till en skådespelare</a>
+</p>

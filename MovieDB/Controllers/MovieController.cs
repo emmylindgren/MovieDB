@@ -140,7 +140,7 @@ namespace MovieDB.Controllers
             List<SelectListItem> languages = lm.GetAllLanguages(out error);
             List<SelectListItem> genres = gm.GetAllGenres(out error);
             List<SelectListItem> actors = am.GetActorandIDSelected(out error, md.Id);
-
+            
             ViewBag.LanguageSelection = languages;
             ViewBag.GenreSelection = genres;
             ViewBag.ActorSelection = actors;
@@ -153,8 +153,6 @@ namespace MovieDB.Controllers
             MovieMethods mm = new MovieMethods();
             int i = 0;
             string error = "";
-
-           // md.Id = id;
 
             i = mm.UpdateMovie(md, out error);
             ViewBag.error = error;

@@ -1,0 +1,57 @@
+﻿@model MovieDB.Models.ActorDetail
+
+@{
+    ViewData["Title"] = "ActorDetails";
+    List<String> MovieList = (List<String>)ViewBag.MovieList;
+}
+
+<h1>Skådespelardetaljer</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Namn
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.FirstName) @Html.DisplayFor(model => model.LastName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BirthYear)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BirthYear)
+        </dd>
+        @if (MovieList != null)
+        {
+            <dt class="col-sm-2">
+                Med i filmerna
+            </dt>
+        }
+        <dd class="col-sm-10">
+            @{ int stop = 0;
+                if (MovieList != null)
+                {
+                    stop = MovieList.Count;
+                }
+            }
+
+            @{for (int i = 0; i < stop; i++)
+                {
+
+                    if (i == MovieList.Count - 1)
+                    {
+                        @(MovieList[i]);
+                    }
+                    else
+                    {
+                        @(MovieList[i] + ", ");
+                    }
+                }
+            }
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Actors">Tillbaka till skådespelare</a>
+</div>

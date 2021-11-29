@@ -40,6 +40,11 @@ namespace MovieDB.Models
         [Display(Name = "Skådespelare")]
         public List<String> Actors { get; set; }
 
+        public int removeAllActors()
+        {
+            Actors.Clear();
+            return 0;
+        }
     }
 
 }
