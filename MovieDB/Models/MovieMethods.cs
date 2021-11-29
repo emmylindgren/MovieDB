@@ -503,6 +503,93 @@ namespace MovieDB.Models
 
         }
 
+        public List<MovieDetail> GetAllMoviesSorted(out string errormsg, string sortBy, bool ascending)
+        {
+
+            SqlConnection dbConnection = new SqlConnection();
+
+            dbConnection.ConnectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=Movies;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+
+            String sqlstring = null; 
+            
+            if (sortBy.Equals("Title"))
+            {
+                if (ascending)
+                {
+                    sqlstring = "SELECT Mo_Id, Mo_Title, Mo_ReleaseYear, La_Language AS Mo_OnLanguage, Mo_Grade, Ge_Title AS Mo_Genre FROM " +
+                      "((Tbl_Movie INNER JOIN Tbl_Languages ON Mo_OnLanguage = La_Id) INNER JOIN Tbl_Genre ON Mo_Genre = Ge_Id) " +
+                      "ORDER BY Mo_Title ASC";
+                }
+                else
+                {
+                    sqlstring = "SELECT Mo_Id, Mo_Title, Mo_ReleaseYear, La_Language AS Mo_OnLanguage, Mo_Grade, Ge_Title AS Mo_Genre FROM " +
+                   "((Tbl_Movie INNER JOIN Tbl_Languages ON Mo_OnLanguage = La_Id) INNER JOIN Tbl_Genre ON Mo_Genre = Ge_Id) " +
+                   "ORDER BY Mo_Title DESC";
+
+                }
+            }
+            //Lägg till fler ifsatser för sorteringen. 
+            SqlCommand dbCommand = new SqlCommand(sqlstring, dbConnection);
+
+
+            //Create adapter 
+            SqlDataAdapter movieAdapter = new SqlDataAdapter(dbCommand);
+            DataSet movieDS = new DataSet();
+
+            List<MovieDetail> MovieList = new List<MovieDetail>();
+
+            try
+            {
+                dbConnection.Open();
+
+                //Fill the dataset with data in a table named Movie.
+                movieAdapter.Fill(movieDS, "Movie");
+
+                int count = 0;
+                int i = 0;
+
+                count = movieDS.Tables["Movie"].Rows.Count;
+
+                if (count > 0)
+                {
+                    while (i < count)
+                    {
+                        //Read the data from the dataset. 
+                        MovieDetail md = new MovieDetail();
+
+                        md.Id = Convert.ToInt16(movieDS.Tables["Movie"].Rows[i]["Mo_Id"]);
+
+                        md.Title = movieDS.Tables["Movie"].Rows[i]["Mo_Title"].ToString();
+                        md.ReleaseYear = Convert.ToInt16(movieDS.Tables["Movie"].Rows[i]["Mo_ReleaseYear"]);
+                        md.OnLanguage = (movieDS.Tables["Movie"].Rows[i]["Mo_OnLanguage"]).ToString();
+                        md.Grade = Convert.ToInt16(movieDS.Tables["Movie"].Rows[i]["Mo_Grade"]);
+                        md.Genre = (movieDS.Tables["Movie"].Rows[i]["Mo_Genre"]).ToString();
+
+                        i++;
+                        MovieList.Add(md);
+                    }
+                    errormsg = "";
+                    return MovieList;
+                }
+                else
+                {
+                    errormsg = "No movies was fetched";
+                    return (null);
+                }
+            }
+            catch (Exception e)
+            {
+                errormsg = e.Message;
+                return (null);
+            }
+            finally
+            {
+                dbConnection.Close();
+            }
+
+        }
+
+
         public MovieDetail GetOneMovie(int movie_id, out string errormsg)
         {
 

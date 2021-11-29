@@ -52,6 +52,33 @@ namespace MovieDB.Controllers
             return View(MovieList);
         }
 
+
+        [HttpGet]
+        public IActionResult IndexSorting(string sortBy, bool firstTime)
+        {
+            
+           // int i = Convert.ToInt32(Genre);
+          //  ViewBag.ChosenGenre = i; 
+            ViewBag.Firsttime = !firstTime;
+
+            List<MovieDetail> MovieList = new List<MovieDetail>();
+            List<SelectListItem> GenreList = new List<SelectListItem>();
+            MovieMethods mm = new MovieMethods();
+            GenreMethods gm = new GenreMethods();
+
+            string error = "";
+            MovieList = mm.GetAllMoviesSorted(out error, sortBy, firstTime);
+            
+            GenreList = gm.GetAllGenres(out error);
+
+            ViewBag.error = error;
+            ViewBag.genreList = GenreList;
+
+            //den klagar just nu på denna. Skickar inte med modellen? Den är ej satt? 
+            return View("Views/Movie/Index.cshtml", MovieList);
+        }
+
+
         [HttpGet]
         public IActionResult AddMovie()
         {
@@ -81,9 +108,7 @@ namespace MovieDB.Controllers
 
             ViewBag.error = error;
             ViewBag.antal = i;
-            //Kan göra nåt här ifall de går vägen, i = 1. Annars kanske en felsida, om i = 0. 
-            //Kan ju spara i sessionsvariabel hur många man har lagt till. Använd denna för felsök:
-            //return View("MovieAdded"); 
+
             return RedirectToAction("Index","Movie");
         }
 

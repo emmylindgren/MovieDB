@@ -5,7 +5,13 @@
 
     int i = 0;
     if(ViewBag.ChosenGenre != null) { i = (int)ViewBag.ChosenGenre; }
-}
+
+    bool firsttime = true;
+    if (ViewBag.Firsttime != null)
+    {
+        firsttime = ViewBag.Firsttime;
+    }
+ }
 
 
 <h1>Dina filmer</h1>
@@ -41,7 +47,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Title)
+                @Html.ActionLink(@Html.DisplayNameFor(model => model.Title), "IndexSorting", new {sortBy = "Title", firstTime = firsttime})
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.ReleaseYear)
