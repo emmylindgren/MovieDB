@@ -54,12 +54,30 @@ namespace MovieDB.Controllers
 
 
         [HttpGet]
-        public IActionResult IndexSorting(string sortBy, bool firstTime)
+        public IActionResult IndexSorting(string sortBy, bool firstTime, int genre)
         {
             
-           // int i = Convert.ToInt32(Genre);
-          //  ViewBag.ChosenGenre = i; 
-            ViewBag.Firsttime = !firstTime;
+            int i = Convert.ToInt32(genre);
+            ViewBag.ChosenGenre = i;
+
+            switch (sortBy)
+            {
+                case "Title":
+                    ViewBag.FirsttimeTitle = !firstTime;
+                    break;
+                case "Year":
+                    ViewBag.FirsttimeYear = !firstTime;
+                    break;
+                case "Language":
+                    ViewBag.FirsttimeLang = !firstTime;
+                    break;
+                case "Grade":
+                    ViewBag.FirsttimeGrade = !firstTime;
+                    break;
+                case "Genre":
+                    ViewBag.FirsttimeGenre = !firstTime;
+                    break;
+            }
 
             List<MovieDetail> MovieList = new List<MovieDetail>();
             List<SelectListItem> GenreList = new List<SelectListItem>();
@@ -67,14 +85,13 @@ namespace MovieDB.Controllers
             GenreMethods gm = new GenreMethods();
 
             string error = "";
-            MovieList = mm.GetAllMoviesSorted(out error, sortBy, firstTime);
+            MovieList = mm.GetAllMoviesSorted(out error, sortBy, firstTime, i);
             
             GenreList = gm.GetAllGenres(out error);
 
             ViewBag.error = error;
             ViewBag.genreList = GenreList;
 
-            //den klagar just nu på denna. Skickar inte med modellen? Den är ej satt? 
             return View("Views/Movie/Index.cshtml", MovieList);
         }
 
@@ -121,7 +138,7 @@ namespace MovieDB.Controllers
 
             ViewBag.error = error;
 
-            return View();
+            return RedirectToAction("Index");
         }
 
         public IActionResult Details(int id)
@@ -183,7 +200,7 @@ namespace MovieDB.Controllers
             ViewBag.error = error;
             ViewBag.antal = i;
 
-            return RedirectToAction("Edit",md.Id);
+            return RedirectToAction("Details", new { id = md.Id });
 
         }
     }

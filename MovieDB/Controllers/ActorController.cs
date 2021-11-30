@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MovieDB.Models;
 using System;
@@ -10,6 +11,7 @@ namespace MovieDB.Controllers
 {
     public class ActorController : Controller
     {
+        
         public IActionResult Actors()
         {
             List<ActorDetail> ActorList = new List<ActorDetail>();
@@ -21,6 +23,18 @@ namespace MovieDB.Controllers
             ViewBag.error = error;
             
             return View(ActorList);
+        }
+
+        public IActionResult ActorSearch(IFormCollection col)
+        {
+            List<ActorDetail> ActorList = new List<ActorDetail>();
+            ActorMethods am = new ActorMethods();
+
+            string searchfrase = col["searchfrase"];
+            string error = "";
+            ActorList = am.SearchActors(out error, searchfrase);
+
+            return View("Actors", ActorList);
         }
 
         public IActionResult DeleteActor(int actorId)

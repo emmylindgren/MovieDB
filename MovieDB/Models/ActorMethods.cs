@@ -228,6 +228,86 @@ namespace MovieDB.Models
 
         }
 
+        public List<ActorDetail> SearchActors(out string errormsg, string searchfrase)
+        {
+
+            SqlConnection dbConnection = new SqlConnection();
+
+            dbConnection.ConnectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=Movies;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+
+            String[] name = searchfrase.Split(' ');
+
+            String sqlstring = "SELECT * FROM Tbl_Actor WHERE Ac_FirstName LIKE @FirstName OR Ac_LastName LIKE @LastName";
+            SqlCommand dbCommand = new SqlCommand(sqlstring, dbConnection);
+
+            if (name.Length > 1)
+            {
+                dbCommand.Parameters.Add("FirstName", SqlDbType.NVarChar).Value = name[0] + "%";
+                dbCommand.Parameters.Add("LastName", SqlDbType.NVarChar).Value = name[1] + "%";
+            }
+            else
+            {
+                dbCommand.Parameters.Add("FirstName", SqlDbType.NVarChar).Value = name[0] + "%";
+                dbCommand.Parameters.Add("LastName", SqlDbType.NVarChar).Value = name[0] + "%";
+            }
+
+            
+            //Create adapter 
+            SqlDataAdapter actorAdapter = new SqlDataAdapter(dbCommand);
+            DataSet actorDS = new DataSet();
+
+            List<ActorDetail> ActorList = new List<ActorDetail>();
+
+            try
+            {
+                dbConnection.Open();
+
+                //Fill the dataset with data in a table named Actor.
+                actorAdapter.Fill(actorDS, "Actor");
+
+                int count = 0;
+                int i = 0;
+
+                count = actorDS.Tables["Actor"].Rows.Count;
+
+                if (count > 0)
+                {
+                    while (i < count)
+                    {
+                        //Read the data from the dataset. 
+                        ActorDetail ad = new ActorDetail();
+
+                        ad.Id = Convert.ToInt16(actorDS.Tables["Actor"].Rows[i]["Ac_Id"]);
+
+                        ad.FirstName = actorDS.Tables["Actor"].Rows[i]["Ac_FirstName"].ToString();
+                        ad.LastName = actorDS.Tables["Actor"].Rows[i]["Ac_LastName"].ToString();
+
+                        ad.BirthYear = Convert.ToInt16(actorDS.Tables["Actor"].Rows[i]["Ac_BirthYear"]);
+
+                        i++;
+                        ActorList.Add(ad);
+                    }
+                    errormsg = "";
+                    return ActorList;
+                }
+                else
+                {
+                    errormsg = "No actors was fetched";
+                    return (null);
+                }
+            }
+            catch (Exception e)
+            {
+                errormsg = e.Message;
+                return (null);
+            }
+            finally
+            {
+                dbConnection.Close();
+            }
+
+        }
+
         public ActorDetail GetOneActor(int actor_id, out string errormsg)
         {
 

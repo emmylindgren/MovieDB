@@ -5,46 +5,68 @@
 }
 
 <h1>Dina skådespelare</h1>
+<h7>Sök efter skådespelare</h7>
+<div class="row">
+    <div class="form-group col-md-4">
+        <form asp-action="ActorSearch">
+            <div class="form-group">
+                <input class="form-control" name="searchfrase" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Sök" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+@if (Model == null)
+{
+    <p>Din sökning gav inga resultat!</p>
+    <p>
+        <a asp-action="Actors">Gå tillbaka</a>
+    </p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.FirstName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.LastName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.BirthYear)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FirstName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LastName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.BirthYear)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Mer information", "ActorDetails", new { actorId = item.Id }) |
+                        @Html.ActionLink("Ta bort", "DeleteActor", new { actorId = item.Id })
+                    </td>
+                </tr>
+            }
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.FirstName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LastName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BirthYear)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.FirstName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BirthYear)
-            </td>
-            <td>
-                @Html.ActionLink("Mer information", "ActorDetails", new {actorId= item.Id }) |
-                @Html.ActionLink("Ta bort", "DeleteActor", new { actorId = item.Id })
-            </td>
-        </tr>
-        }
 
+        </tbody>
 
-    </tbody>
-
-</table>
+    </table>
+}
 <p>
     <a asp-action="AddActor">Lägg till en skådespelare</a>
 </p>

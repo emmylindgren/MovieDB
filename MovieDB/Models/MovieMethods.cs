@@ -119,11 +119,10 @@ namespace MovieDB.Models
             finally
             {
                 dbConnection.Close();
+                int movie_id = getMovieID(md.Title, out errormsg);
+                clearMovieConnections(movie_id, out errormsg);
                 if (actors != null)
                 {
-                    
-                    int movie_id = getMovieID(md.Title, out errormsg);
-                    clearMovieConnections(movie_id, out errormsg);
                     addMovieConnections(movie_id, actors, out errormsg);
                 }
             }
@@ -503,34 +502,59 @@ namespace MovieDB.Models
 
         }
 
-        public List<MovieDetail> GetAllMoviesSorted(out string errormsg, string sortBy, bool ascending)
+        public List<MovieDetail> GetAllMoviesSorted(out string errormsg, string sortBy, bool ascending, int genre)
         {
 
             SqlConnection dbConnection = new SqlConnection();
 
             dbConnection.ConnectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=Movies;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
 
-            String sqlstring = null; 
-            
-            if (sortBy.Equals("Title"))
+            String sqlstring = null;
+            var sb = new System.Text.StringBuilder();
+
+            sb.AppendLine("SELECT Mo_Id, Mo_Title, Mo_ReleaseYear, La_Language AS Mo_OnLanguage, Mo_Grade, Ge_Title AS Mo_Genre FROM " +
+                        "((Tbl_Movie INNER JOIN Tbl_Languages ON Mo_OnLanguage = La_Id) INNER JOIN Tbl_Genre ON Mo_Genre = Ge_Id) ");
+
+            if(genre != 0)
             {
-                if (ascending)
-                {
-                    sqlstring = "SELECT Mo_Id, Mo_Title, Mo_ReleaseYear, La_Language AS Mo_OnLanguage, Mo_Grade, Ge_Title AS Mo_Genre FROM " +
-                      "((Tbl_Movie INNER JOIN Tbl_Languages ON Mo_OnLanguage = La_Id) INNER JOIN Tbl_Genre ON Mo_Genre = Ge_Id) " +
-                      "ORDER BY Mo_Title ASC";
-                }
-                else
-                {
-                    sqlstring = "SELECT Mo_Id, Mo_Title, Mo_ReleaseYear, La_Language AS Mo_OnLanguage, Mo_Grade, Ge_Title AS Mo_Genre FROM " +
-                   "((Tbl_Movie INNER JOIN Tbl_Languages ON Mo_OnLanguage = La_Id) INNER JOIN Tbl_Genre ON Mo_Genre = Ge_Id) " +
-                   "ORDER BY Mo_Title DESC";
-
-                }
+                sb.AppendLine("WHERE Ge_Id = @genreID ");
             }
-            //Lägg till fler ifsatser för sorteringen. 
-            SqlCommand dbCommand = new SqlCommand(sqlstring, dbConnection);
 
+            switch (sortBy)
+            {
+                case "Title":
+                    sb.AppendLine("ORDER BY Mo_Title ");
+                    break;
+                case "Year":
+                    sb.AppendLine("ORDER BY Mo_ReleaseYear");
+                    break;
+                case "Language":
+                    sb.AppendLine("ORDER BY La_Language");
+                    break;
+                case "Grade":
+                    sb.AppendLine("ORDER BY Mo_Grade");
+                    break;
+                case "Genre":
+                    sb.AppendLine("ORDER BY Ge_Title");
+                    break;
+            }
+
+            if (ascending)
+            {
+                sb.AppendLine("ASC");
+            }
+            else
+            {
+                sb.AppendLine("DESC");
+            }
+
+            sqlstring = sb.ToString();
+
+            SqlCommand dbCommand = new SqlCommand(sqlstring, dbConnection);
+            if(genre != 0)
+            {
+                dbCommand.Parameters.Add("genreID", SqlDbType.Int).Value = genre;
+            }
 
             //Create adapter 
             SqlDataAdapter movieAdapter = new SqlDataAdapter(dbCommand);

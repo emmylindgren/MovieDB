@@ -6,10 +6,35 @@
     int i = 0;
     if(ViewBag.ChosenGenre != null) { i = (int)ViewBag.ChosenGenre; }
 
-    bool firsttime = true;
-    if (ViewBag.Firsttime != null)
+
+    bool firsttimeTitle = true;
+    if (ViewBag.FirsttimeTitle != null)
     {
-        firsttime = ViewBag.Firsttime;
+        firsttimeTitle = ViewBag.FirsttimeTitle;
+    }
+
+    bool firsttimeYear = true;
+    if (ViewBag.FirsttimeYear != null)
+    {
+        firsttimeYear = ViewBag.FirsttimeYear;
+    }
+
+    bool firsttimeLang = true;
+    if (ViewBag.FirsttimeLang != null)
+    {
+        firsttimeLang = ViewBag.Firsttime;
+    }
+
+    bool firsttimeGrade = true;
+    if (ViewBag.FirsttimeGrade != null)
+    {
+        firsttimeGrade = ViewBag.FirsttimeGrade;
+    }
+
+    bool firsttimeGenre = true;
+    if (ViewBag.FirsttimeGenre != null)
+    {
+        firsttimeGenre = ViewBag.FirsttimeGenre;
     }
  }
 
@@ -47,19 +72,19 @@
     <thead>
         <tr>
             <th>
-                @Html.ActionLink(@Html.DisplayNameFor(model => model.Title), "IndexSorting", new {sortBy = "Title", firstTime = firsttime})
+                @Html.ActionLink(@Html.DisplayNameFor(model => model.Title), "IndexSorting", new {sortBy = "Title", firstTime = firsttimeTitle, genre = i})
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ReleaseYear)
+                @Html.ActionLink(@Html.DisplayNameFor(model => model.ReleaseYear), "IndexSorting", new { sortBy = "Year", firstTime = firsttimeYear, genre = i})
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.OnLanguage)
+                @Html.ActionLink(@Html.DisplayNameFor(model => model.OnLanguage), "IndexSorting", new { sortBy = "Language", firstTime = firsttimeLang, genre = i })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Grade)
+                @Html.ActionLink(@Html.DisplayNameFor(model => model.Grade), "IndexSorting", new { sortBy = "Grade", firstTime = firsttimeGrade, genre = i })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Genre)
+                @Html.ActionLink(@Html.DisplayNameFor(model => model.Genre), "IndexSorting", new { sortBy = "Genre", firstTime = firsttimeGenre, genre = i })
             </th>
             <th></th>
         </tr>
