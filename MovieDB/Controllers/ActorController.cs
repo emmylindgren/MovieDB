@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MovieDB.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,7 +13,11 @@ namespace MovieDB.Controllers
 {
     public class ActorController : Controller
     {
-        
+        private readonly IWebHostEnvironment hostingEnviroment;
+        public ActorController(IWebHostEnvironment environment)
+        {
+            hostingEnviroment = environment;
+        }
         public IActionResult Actors()
         {
             List<ActorDetail> ActorList = new List<ActorDetail>();
@@ -42,8 +48,7 @@ namespace MovieDB.Controllers
             ActorMethods am = new ActorMethods();
             string error = "";
 
-            int hej = actorId;
- 
+
             am.DeleteActor(actorId, out error);
             ViewBag.error = error;
 
@@ -69,8 +74,15 @@ namespace MovieDB.Controllers
             int i = 0;
             string error = "";
 
-            List<String> movieee = ad.Movies;
-
+            if (ad.ProfilePicture != null)
+            {
+                var profilePicFileName = GetUniqueFileName(ad.ProfilePicture.FileName);
+                var uploadsPath = Path.Combine(hostingEnviroment.WebRootPath, "uploads");
+                var profilePicFilePath = Path.Combine(uploadsPath, profilePicFileName);
+                ad.ProfilePicture.CopyTo(new FileStream(profilePicFilePath, FileMode.Create));
+                ad.ProfilePicturePath = profilePicFileName;
+            }
+           
             i = am.InsertActor(ad, out error);
 
             ViewBag.error = error;
@@ -78,7 +90,14 @@ namespace MovieDB.Controllers
 
             return RedirectToAction("Actors");
         }
-
+        private string GetUniqueFileName(string fileName)
+        {
+            fileName = Path.GetFileName(fileName);
+            return Path.GetFileNameWithoutExtension(fileName)
+                      + "_"
+                      + Guid.NewGuid().ToString().Substring(0, 4)
+                      + Path.GetExtension(fileName);
+        }
         public IActionResult ActorDetails(int actorID)
         {
 
@@ -90,9 +109,8 @@ namespace MovieDB.Controllers
 
             ad = am.GetOneActor(actorID, out error);
             List<String> movies = mm.GetMoviesCorrespondingTo(ad.Id, out error);
+
             ViewBag.MovieList = movies;
-          
-            
             ViewBag.error = error;
 
             return View(ad);

@@ -22,13 +22,28 @@ namespace MovieDB.Models
             dbConnection.ConnectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=Movies;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
 
             //Sqlstring and adding a movie to the db
-            String sqlstring = "INSERT INTO Tbl_Actor (Ac_FirstName, Ac_Lastname, Ac_BirthYear) " +
+            String sqlstring = null;
+            if(ad.ProfilePicturePath != null)
+            {
+                sqlstring = "INSERT INTO Tbl_Actor (Ac_FirstName, Ac_Lastname, Ac_BirthYear, Ac_ProfilePic) " +
+                "VALUES (@FirstName,@LastName,@BirthYear, @ProfilePicPath)"; 
+            }
+            else
+            {
+                sqlstring = "INSERT INTO Tbl_Actor (Ac_FirstName, Ac_Lastname, Ac_BirthYear) " +
                 "VALUES (@FirstName,@LastName,@BirthYear)";
+            }
+            
+
             SqlCommand dbCommand = new SqlCommand(sqlstring, dbConnection);
 
             dbCommand.Parameters.Add("FirstName", SqlDbType.NVarChar, 50).Value = ad.FirstName;
             dbCommand.Parameters.Add("LastName", SqlDbType.NVarChar, 50).Value = ad.LastName;
             dbCommand.Parameters.Add("BirthYear", SqlDbType.Int).Value = Convert.ToInt32(ad.BirthYear);
+            if(ad.ProfilePicturePath!=null)
+            {
+                dbCommand.Parameters.Add("ProfilePicPath", SqlDbType.NVarChar).Value = ad.ProfilePicturePath;
+            }
 
             List<String> movies = ad.Movies;
 
@@ -250,7 +265,6 @@ namespace MovieDB.Models
                 dbCommand.Parameters.Add("FirstName", SqlDbType.NVarChar).Value = name[0] + "%";
                 dbCommand.Parameters.Add("LastName", SqlDbType.NVarChar).Value = name[0] + "%";
             }
-
             
             //Create adapter 
             SqlDataAdapter actorAdapter = new SqlDataAdapter(dbCommand);
@@ -346,7 +360,9 @@ namespace MovieDB.Models
                     ad.LastName = actorDS.Tables["Actor"].Rows[i]["Ac_LastName"].ToString();
 
                     ad.BirthYear = Convert.ToInt16(actorDS.Tables["Actor"].Rows[i]["Ac_BirthYear"]);
-
+                
+                    ad.ProfilePicturePath = actorDS.Tables["Actor"].Rows[i]["Ac_ProfilePic"].ToString();
+                    
                     errormsg = "";
                     return ad;
                 }

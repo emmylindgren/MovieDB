@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -29,5 +30,10 @@ namespace MovieDB.Models
 
         [Display(Name = "Filmer")]
         public List<String> Movies { get; set; }
+
+        [Display(Name ="Bild")]
+        public IFormFile ProfilePicture { get; set; }
+
+        public string ProfilePicturePath { get; set; }
     }
 }
